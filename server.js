@@ -1,17 +1,16 @@
 var express = require("express");
 var bodyParser = require('body-parser');
 
-var file = require("./condition/isExistFile");
-var routeItems = require("./routes/get_items");
-var routeItem = require("./routes/get_item");
-var routeInsertItem = require("./routes/insert_item");
-var routeDeleteItem = require("./routes/delete_item");
-var routeUpdateItem = require("./routes/update_item");
+var file = require("./condition/is-exist-file");
+var routeItems = require("./routes/get-items");
+var routeItem = require("./routes/get-item");
+var routeInsertItem = require("./routes/insert-item");
+var routeDeleteItem = require("./routes/delete-item");
+var routeUpdateItem = require("./routes/update-item");
 
 var app = express();
-app.use(bodyParser.urlencoded({extended: false}));
+                    
 app.use(bodyParser.json());
-
 app.use('/items', routeItems);
 app.use('/items', routeItem);
 app.use('/items', routeInsertItem);
