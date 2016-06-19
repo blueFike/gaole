@@ -17,7 +17,8 @@ function updateData(res, req, id){
 
         isContained(items, res, id);
 
-        if (false === isType(req.body.barcode, req.body.name, req.body.unit, req.body.price, res))
+        var wrongType = isType(req.body.barcode, req.body.name, req.body.unit, req.body.price, res);
+        if (false === wrongType)
             return;
 
         for (var i = 0; i < items.length; i++) {
@@ -29,22 +30,16 @@ function updateData(res, req, id){
                     unit: req.body.unit,
                     price: req.body.price
                 };
-                writeData(items, res, req, items[i].id);
+                writeData(items, res, items[i]);
                 break;
             }
         }
     });
 }
 
-function writeData(items, res, req, id) {
+function writeData(items, res, item) {
     fs.writeFile(fixturesFile, JSON.stringify(items), function () {
-        res.status(201).json({
-            id: id,
-            barcode: req.body.barcode,
-            name: req.body.name,
-            unit: req.body.unit,
-            price: req.body.price
-        });
+        res.status(201).json(item);
     });
 }
 
