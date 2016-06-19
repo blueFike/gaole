@@ -4,11 +4,12 @@ var isContained = require('../condition/is-exist-id');
 var isType = require('../condition/is-type');
 
 var router = express.Router();
+var fixturesFile = './fixtures.json';
 
 router.put('/:id', function (req, res) {
     var id = req.params.id;
 
-    fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
+    fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
         var items = JSON.parse(data);
 
         isContained(items, res, id);
@@ -22,7 +23,7 @@ router.put('/:id', function (req, res) {
                     id: items[i].id, barcode: req.body.barcode,
                     name: req.body.name, unit: req.body.unit, price: req.body.price, nextId: items[i].nextId
                 };
-                fs.writeFile('./fixtures.json', JSON.stringify(items), function () {
+                fs.writeFile(fixturesFile, JSON.stringify(items), function () {
                     res.status(201).json({
                         id: items[i].id, barcode: req.body.barcode,
                         name: req.body.name, unit: req.body.unit, price: req.body.price
@@ -35,5 +36,3 @@ router.put('/:id', function (req, res) {
 });
 
 module.exports = router;
-
-
