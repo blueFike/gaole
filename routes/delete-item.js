@@ -4,7 +4,7 @@ var router = express.Router();
 
 router.delete('/:id', function (req, res) {
     var id = req.params.id;
-    
+
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
         var items = JSON.parse(data);
         var isContained = false;
@@ -16,17 +16,13 @@ router.delete('/:id', function (req, res) {
             }
         }
 
-        fs.writeFile('./fixtures.json', JSON.stringify(items), function (err, data) {
-            if (isContained === false) {
-                res.status(404).send("");
-            } else {
-                res.status(204).send("");
-            }
-        });
+        if (isContained === false) {
+            res.status(404).send("");
+        } else {
+            fs.writeFile('./fixtures.json', JSON.stringify(items), function (err, data) {});
+            res.status(204).send("");
+        }
     });
 });
 
 module.exports = router;
-
-
-
