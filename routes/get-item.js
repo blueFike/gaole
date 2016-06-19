@@ -6,24 +6,33 @@ var router = express.Router();
 
 router.get('/:id', function (req, res) {
     var id = req.params.id;
+    readData(res, id);
+});
 
+function readData(res, id) {
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
         var items = JSON.parse(data);
 
         if (false === isContained(items, res, id))
             return;
-        
-        for (var i = 0; i < items.length; i++) {
-            if (items[i].id === parseInt(id)) {
-                res.status(200).json({
-                    id: items[i].id, barcode: items[i].barcode, name: items[i].name,
-                    unit: items[i].unit, price: items[i].price
-                });
-                break;
-            }
-        }
+
+        selectItem(items, id, res);
     });
-});
+}
+
+function selectItem(items, id, res) {
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].id === parseInt(id)) {
+            res.status(200).json({
+                id: items[i].id,
+                barcode: items[i].barcode,
+                name: items[i].name,
+                unit: items[i].unit,
+                price: items[i].price
+            });
+            break;
+        }
+    }
+}
 
 module.exports = router;
-
