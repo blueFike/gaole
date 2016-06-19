@@ -5,12 +5,15 @@ var isType = require('../condition/is-type');
 var router = express.Router();
 var maxId = 0;
 
-fs.readFile('./condition/max-id.json','UTF-8', function (err, data){
-    if(err){
-        return;
+fs.stat('./condition/max-id.json', function(err, stat){
+    var fileFound = stat && stat.isFile();
+    if (fileFound) {
+        var data = fs.readFileSync('./condition/max-id.json','UTF-8');
+        var maxIdObject = JSON.parse(data);
+        maxId = maxIdObject.maxId;
+    }else{
+       console.log(err);
     }
-    var maxIdObject = JSON.parse(data);
-    maxId = maxIdObject.maxId;
 });
 
 router.post('/', function (req, res) {
@@ -33,7 +36,7 @@ router.post('/', function (req, res) {
                 name: req.body.name, unit: req.body.unit, price: req.body.price, nextId: maxId + 1
             });
         }
-        
+
         fs.writeFile('./fixtures.json', JSON.stringify(items), function () {
             res.status(200).json({
                 id: maxId, barcode: req.body.barcode, name: req.body.name,
