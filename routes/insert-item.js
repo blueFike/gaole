@@ -3,12 +3,14 @@ var fs = require('fs');
 var isType = require('../condition/is-type');
 
 var router = express.Router();
+var maxIdFile = './condition/max-id.json';
+var fixturesFile = './fixtures.json';
 var maxId = 0;
 
-fs.stat('./condition/max-id.json', function(err, stat){
+fs.stat(maxIdFile, function(err, stat){
     var fileFound = stat && stat.isFile();
     if (fileFound) {
-        var data = fs.readFileSync('./condition/max-id.json','UTF-8');
+        var data = fs.readFileSync(maxIdFile,'UTF-8');
         var maxIdObject = JSON.parse(data);
         maxId = maxIdObject.maxId;
     }else{
@@ -17,35 +19,50 @@ fs.stat('./condition/max-id.json', function(err, stat){
 });
 
 router.post('/', function (req, res) {
-    fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
-        var items = JSON.parse(data);
+    insertData(res,req);
+});
 
-        if (false === isType(req.body.barcode, req.body.name, req.body.unit, req.body.price, res))
+function insertData(res,req) {
+    fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
+        var items = JSON.parse(data);
+        var item = {
+            id: maxId,
+            barcode: req.body.barcode,
+            name: req.body.name,
+            unit: req.body.unit,
+            price: req.body.price
+        };
+        var wrongType = isType(req.body.barcode, req.body.name,
+                               req.body.unit, req.body.price, res);
+        if (false === wrongType)
             return;
 
         maxId++;
 
         if (items.length === 0) {
             items.push({
-                id: 1, barcode: req.body.barcode,
-                name: req.body.name, unit: req.body.unit, price: req.body.price, nextId: maxId + 1
+                id: 1,
+                barcode: req.body.barcode,
+                name: req.body.name,
+                unit: req.body.unit,
+                price: req.body.price
             });
         } else {
-            items.push({
-                id: maxId, barcode: req.body.barcode,
-                name: req.body.name, unit: req.body.unit, price: req.body.price, nextId: maxId + 1
-            });
+            items.push(item);
         }
-
-        fs.writeFile('./fixtures.json', JSON.stringify(items), function () {
-            res.status(200).json({
-                id: maxId, barcode: req.body.barcode, name: req.body.name,
-                unit: req.body.unit, price: req.body.price
-            });
-        });
-
-        fs.writeFile('./condition/max-id.json',JSON.stringify({maxId:maxId}));
+        writeData(items, item, res);
+        writeMaxId(maxId);
     });
-});
+}
+
+function writeData(items, item, res) {
+    fs.writeFile(fixturesFile, JSON.stringify(items), function () {
+        res.status(200).json(item);
+    });
+}
+
+function writeMaxId(maxId) {
+    fs.writeFile(maxIdFile,JSON.stringify({maxId:maxId}));
+}
 
 module.exports = router;
