@@ -4,13 +4,15 @@ var isContained = require('../condition/is-exist-id');
 
 var router = express.Router();
 
-router.get('/:id', function (req, res) {
+router.get('/:id', function (req, res, next) {
     var id = req.params.id;
-    readData(res, id);
+    readData(res, id, next);
 });
 
-function readData(res, id) {
+function readData(res, id, next) {
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
+        if(err) return next(err);
+        
         var items = JSON.parse(data);
 
         if (false === isContained(items, res, id))

@@ -2,12 +2,14 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 
-router.get('/', function (req, res) {
-    readData(res, res);
+router.get('/', function (req, res, next) {
+    readData(res, next);
 });
 
-function readData(res, req) {
-    fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
+function readData(res) {
+    fs.readFile('./fixtures.json', 'UTF-8', function (err, data, next) {
+        if(err) return next(err);
+        
         var items = JSON.parse(data);
 
         if (err) {

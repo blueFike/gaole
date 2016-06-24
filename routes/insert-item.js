@@ -7,23 +7,23 @@ var maxIdFile = './condition/max-id.json';
 var fixturesFile = './fixtures.json';
 var maxId = 0;
 
-fs.stat(maxIdFile, function (err, stat) {
+fs.stat(maxIdFile, function (err, stat, next) {
     var fileFound = stat && stat.isFile();
     if (fileFound) {
         var data = fs.readFileSync(maxIdFile, 'UTF-8');
         var maxIdObject = JSON.parse(data);
         maxId = maxIdObject.maxId;
     } else {
-        console.log(err);
+        return next(err);
     }
 });
 
-router.post('/', function (req, res) {
-    insertData(res, req);
+router.post('/', function (req, res, next) {
+    insertData(res, req, next);
 });
 
-function insertData(res, req) {
-    fs.readFile(fixturesFile, 'UTF-8', function (err, data, next) {
+function insertData(res, req, next) {
+    fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
         if (err) return next(err);
 
         var items = JSON.parse(data);
@@ -52,13 +52,13 @@ function insertData(res, req) {
         } else {
             items.push(item);
         }
-        writeData(items, item, res);
+        writeData(items, item, res, next);
         writeMaxId(maxId);
     });
 }
 
-function writeData(items, item, res) {
-    fs.writeFile(fixturesFile, JSON.stringify(items), function (err, next) {
+function writeData(items, item, res, next) {
+    fs.writeFile(fixturesFile, JSON.stringify(items), function (err) {
         if (err) return next(err);
 
         res.status(200).json(item);
