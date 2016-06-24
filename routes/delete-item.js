@@ -6,8 +6,8 @@ router.delete('/:id', function (req, res, next) {
     var id = req.params.id;
 
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
-        if(err) return next(err);
-        
+        if (err) return next(err);
+
         var items = JSON.parse(data);
         var isContained = false;
 
@@ -22,7 +22,7 @@ router.delete('/:id', function (req, res, next) {
             res.status(404).send("");
         } else {
             fs.writeFile('./fixtures.json', JSON.stringify(items), function (err, data) {
-                if(err) return next(err);                
+                if (err) return next(err);
             });
             
             res.status(204).send("");

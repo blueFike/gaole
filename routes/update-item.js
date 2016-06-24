@@ -11,9 +11,9 @@ router.put('/:id', function (req, res, next) {
     updateData(res, req, id, next);
 });
 
-function updateData(res, req, id, next){
+function updateData(res, req, id, next) {
     fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
-        if(err) return next(err);
+        if (err) return next(err);
 
         var items = JSON.parse(data);
 
@@ -25,7 +25,7 @@ function updateData(res, req, id, next){
 
         for (var i = 0; i < items.length; i++) {
             if (items[i].id === parseInt(id)) {
-                items[i]  = {
+                items[i] = {
                     id: items[i].id,
                     barcode: req.body.barcode,
                     name: req.body.name,
@@ -41,8 +41,9 @@ function updateData(res, req, id, next){
 
 function writeData(items, res, item, next) {
     fs.writeFile(fixturesFile, JSON.stringify(items), function (err, next) {
-        if(err) return next err;
-        
+        if (err) return next
+        err;
+
         res.status(201).json(item);
     });
 }

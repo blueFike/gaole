@@ -8,7 +8,7 @@ router.get('/', function (req, res, next) {
 
 function readData(res) {
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data, next) {
-        if(err) return next(err);
+        if (err) return next(err);
         
         var items = JSON.parse(data);
 

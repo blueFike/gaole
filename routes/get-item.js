@@ -11,8 +11,8 @@ router.get('/:id', function (req, res, next) {
 
 function readData(res, id, next) {
     fs.readFile('./fixtures.json', 'UTF-8', function (err, data) {
-        if(err) return next(err);
-        
+        if (err) return next(err);
+
         var items = JSON.parse(data);
 
         if (false === isContained(items, res, id))
