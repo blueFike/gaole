@@ -6,13 +6,15 @@ var isType = require('../condition/is-type');
 var router = express.Router();
 var fixturesFile = './fixtures.json';
 
-router.put('/:id', function (req, res) {
+router.put('/:id', function (req, res, next) {
     var id = req.params.id;
-    updateData(res, req, id);
+    updateData(res, req, id, next);
 });
 
-function updateData(res, req, id){
+function updateData(res, req, id, next){
     fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
+        if(err) return next(err);
+
         var items = JSON.parse(data);
 
         isContained(items, res, id);
@@ -30,15 +32,17 @@ function updateData(res, req, id){
                     unit: req.body.unit,
                     price: req.body.price
                 };
-                writeData(items, res, items[i]);
+                writeData(items, res, items[i], next);
                 break;
             }
         }
     });
 }
 
-function writeData(items, res, item) {
-    fs.writeFile(fixturesFile, JSON.stringify(items), function () {
+function writeData(items, res, item, next) {
+    fs.writeFile(fixturesFile, JSON.stringify(items), function (err, next) {
+        if(err) return next err;
+        
         res.status(201).json(item);
     });
 }
