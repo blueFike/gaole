@@ -7,23 +7,25 @@ var maxIdFile = './condition/max-id.json';
 var fixturesFile = './fixtures.json';
 var maxId = 0;
 
-fs.stat(maxIdFile, function(err, stat){
+fs.stat(maxIdFile, function (err, stat) {
     var fileFound = stat && stat.isFile();
     if (fileFound) {
-        var data = fs.readFileSync(maxIdFile,'UTF-8');
+        var data = fs.readFileSync(maxIdFile, 'UTF-8');
         var maxIdObject = JSON.parse(data);
         maxId = maxIdObject.maxId;
-    }else{
-       console.log(err);
+    } else {
+        console.log(err);
     }
 });
 
 router.post('/', function (req, res) {
-    insertData(res,req);
+    insertData(res, req);
 });
 
-function insertData(res,req) {
-    fs.readFile(fixturesFile, 'UTF-8', function (err, data) {
+function insertData(res, req) {
+    fs.readFile(fixturesFile, 'UTF-8', function (err, data, next) {
+        if (err) return next(err);
+
         var items = JSON.parse(data);
         var item = {
             id: maxId,
@@ -33,7 +35,7 @@ function insertData(res,req) {
             price: req.body.price
         };
         var wrongType = isType(req.body.barcode, req.body.name,
-                               req.body.unit, req.body.price, res);
+            req.body.unit, req.body.price, res);
         if (false === wrongType)
             return;
 
@@ -56,13 +58,15 @@ function insertData(res,req) {
 }
 
 function writeData(items, item, res) {
-    fs.writeFile(fixturesFile, JSON.stringify(items), function () {
+    fs.writeFile(fixturesFile, JSON.stringify(items), function (err, next) {
+        if (err) return next(err);
+
         res.status(200).json(item);
     });
 }
 
 function writeMaxId(maxId) {
-    fs.writeFile(maxIdFile,JSON.stringify({maxId:maxId}));
+    fs.writeFile(maxIdFile, JSON.stringify({maxId: maxId}));
 }
 
 module.exports = router;
